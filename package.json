@@ -1,0 +1,33 @@
+{
+    "name": "three-system",
+    "version": "0.1.0",
+    "description": "Entity component system pattern for Three.js",
+    "main": "./index.js",
+    "module": "./index.js",
+    "scripts": {
+      "dist": "rollup -c"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/SamsungInternet/three-system.git"
+    },
+    "keywords": [
+      "entity",
+      "component",
+      "system",
+      "pattern",
+      "three",
+      "ecs"
+    ],
+    "author": "Yannis Gravezas <wizgrav@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/SamsungInternet/three-system/issues"
+    },
+    "homepage": "https://github.com/SamsungInternet/three-system#readme",
+    "devDependencies": {
+      "rollup": "^1.23.1",
+      "rollup-plugin-node-resolve": "^5.2.0"
+    }
+  }
+  
