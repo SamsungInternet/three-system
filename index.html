@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three-system</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="icon" type="image/png" href="//developer.samsung.com/sd2_common/img/favicon-32x32.png" sizes="32x32">
+		<style>
+			body {
+				background-color:aqua;
+			}
+			canvas {
+				position: fixed;
+				top: 0;
+				left:0;
+				width: 100vw;
+				height: 100vh;
+			}
+
+			
+		</style>
+
+		
+
+	</head>
+	<body>
+		<canvas></canvas>
+		<script type="module">
+
+			import * as THREE from "./lib/three.js";
+			import { WEBVR } from "./lib/WebVR.js";
+			import attachSystem from "./index.js";
+			
+			var canvas = document.querySelector( 'canvas' );
+
+			var camera, scene, renderer;
+	
+			renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+
+			renderer.setPixelRatio( window.devicePixelRatio );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+
+			renderer.vr.enabled = true;
+
+			camera = new THREE.PerspectiveCamera();
+
+			function onWindowResize() {
+
+				var aspect = window.innerWidth / window.innerHeight;
+				camera.aspect = aspect;
+				camera.updateProjectionMatrix();
+
+				var dpr = renderer.getPixelRatio();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			scene = new THREE.Scene();
+
+			var light = new THREE.PointLight();
+
+			scene.add(light);
+
+			onWindowResize();
+
+			
+			var geometry = new THREE.SphereBufferGeometry(1, 32, 32);
+
+			var material = new THREE.MeshStandardMaterial();
+
+			attachSystem(scene, "move", {
+				
+				init: function(e) {
+					return e;
+				},
+
+				tick: function(e, objects, name) {
+					var t = e.time/30000;
+
+					objects.forEach(function(obj, i){
+						var data = obj.userData[name];
+						obj.material.color.setHSL(Math.abs(Math.sin(t * (data.chroma + i / objects.length))), 0.5, 0.5);
+						var y = ((i * 2 + t * 0.1) % 20) - 10;
+						var a = Math.sin((t + (i / objects.length))) * Math.PI * 16;
+						obj.position.set( Math.sin(a) * (10 + i * 0.1),  y, Math.cos(a) * (10 + i * 0.1 ));
+					});
+				}
+
+			});
+
+			for(var i = 0; i < 100; i++) {
+				
+				var mesh = new THREE.Mesh(geometry, material.clone());
+
+				scene.dispatchEvent({type: "move/register", entity: mesh, chroma: Math.random()});
+			
+				scene.add(mesh);
+
+			}
+
+			function render() {
+				
+				scene.dispatchEvent({ type: "tick", time: window.performance.now() });
+
+				renderer.render(scene, camera);
+			
+			}
+
+			renderer.setAnimationLoop(render);
+
+		</script>
+
+	</body>
+</html>
